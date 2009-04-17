@@ -1,0 +1,6 @@
+h1. GoDaddy Reseller Example
+
+This is currently a work in progress.  We're writing the Ruby on Rails library (Gem) that will allow a Ruby on Rails app to easily
+interface with the GoDaddy Reseller API.
+
+Watch this project to stay informed of the final release!
