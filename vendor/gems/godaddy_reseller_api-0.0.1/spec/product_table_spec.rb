@@ -6,7 +6,7 @@ describe GoDaddyReseller::ProductTable do
   end
   
   it "correctly creates hash" do
-   GoDaddyReseller::ProductTable::HASH['Enterprise Level DNS'].should == 375001
+    GoDaddyReseller::ProductTable::HASH['Enterprise Level DNS'].should == 375001
   end
   
 

@@ -1,3 +1,4 @@
+# Example usage: GoDaddyReseller::ProductTable::HASH['Enterprise Level DNS']
 module GoDaddyReseller 
   module ProductTable
     ARRAY =  [

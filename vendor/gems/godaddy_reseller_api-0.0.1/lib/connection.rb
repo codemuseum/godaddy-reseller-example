@@ -51,11 +51,15 @@ module GoDaddyReseller
       result = '';
       hash.keys.map(&:to_s).sort.each do |k|
         v = hash[k.to_sym]
-        result << "<#{k.to_s}"
-        if v.is_a?(Hash)
+
+        if v.is_a?(Array)
+          result << v.map { |vh| xml_encode_hash({ k.to_sym => vh }) }.join
+        elsif v.is_a?(Hash)
+          result << "<#{k.to_s}"
           
           if v.key?(:_attributes) # save all the attributes
-            v[:_attributes].each_pair do |attrk, attrv|
+            v[:_attributes].keys.map(&:to_s).sort.each do |attrk|
+              attrv = v[:_attributes][attrk.to_sym]
               result << " #{attrk.to_s}=\"#{attrv.to_s}\""
             end
             v.delete(:_attributes)
@@ -66,12 +70,8 @@ module GoDaddyReseller
           else
             result << '>' << xml_encode_hash(v) << "</#{k.to_s}>"
           end
-        elsif v.is_a?(Array)
-          result << '>'
-          result << v.map { |vh| xml_encode_hash(vh) }.join
-          result << "</#{k.to_s}>"
         else
-          result << '>'
+          result << "<#{k.to_s}>"
           result << "#{v.to_s}" 
           result << "</#{k.to_s}>"
         end 

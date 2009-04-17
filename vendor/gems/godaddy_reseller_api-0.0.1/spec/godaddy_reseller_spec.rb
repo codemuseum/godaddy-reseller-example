@@ -19,7 +19,7 @@ describe GoDaddyReseller::API do
     end
     
     it "creates correct xml for hash of domains array" do
-      result = GoDaddyReseller::Connection.xml_encode_hash({ :check => ['example.com', 'example.net', 'example.org', 'example.info', 'example.biz', 'example.ws', 'example.us'].map { |d| {:domain => {:_attributes => { :name => d }}} } })
+      result = GoDaddyReseller::Connection.xml_encode_hash({ :check => { :domain => ['example.com', 'example.net', 'example.org', 'example.info', 'example.biz', 'example.ws', 'example.us'].map { |d| {:_attributes => { :name => d }}} }})
       result.should == '<check><domain name="example.com" /><domain name="example.net" /><domain name="example.org" /><domain name="example.info" /><domain name="example.biz" /><domain name="example.ws" /><domain name="example.us" /></check>'
     end
     
