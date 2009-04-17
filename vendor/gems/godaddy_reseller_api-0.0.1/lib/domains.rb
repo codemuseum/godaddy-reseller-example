@@ -3,7 +3,7 @@ module GoDaddyReseller
     
     def self.included(base) # :nodoc:
       base.class_eval do
-        attr_accessor :equity_trade_orders
+        attr_accessor :orders
       end
     end
     
@@ -32,15 +32,30 @@ module GoDaddyReseller
     def check(domains_array)
       keep_alive!
       
-      response = c.post("/Check", { :check => domains_array.map { |d| {:domain => {:attr_name => d}} } })
+      response = c.post("/Check", { :check => { :domain => domains_array.map { |d| {:_attributes => { :name => d }}} }})
       result = c.class.decode(response.body)
       if result['result']['code'] == '1000'
         self.class.check_result_to_answer(result)
       else
-        raise GoDaddyReseller(result['result']['msg'])
+        raise GoDaddyResellerError(result['result']['msg'])
       end
     end
 
+    # This takes quite the hash. See spec/domains_spec.rb for example order_hashes
+    # Returns an order response hash {:user_id => '2', :dbpuser_id => '3', :order_id => '100' }, or raises an error if there was a problem.
+    def order(order_hash)
+      keep_alive!
+      
+      response = c.post("/Order", order_hash)
+      result = c.class.decode(response.body)
+      if result['result']['code'] == '1000'
+        self.orders ||= []
+        self.orders << { :user_id => result['user'], :dbpuser_id => result['dbpuser'], :order_id => result['resdata']['orderid'] }
+        return self.orders.last
+      else
+        raise GoDaddyResellerError(result['result']['msg'])
+      end
+    end
     
     protected
 

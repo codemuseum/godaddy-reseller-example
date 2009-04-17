@@ -25,7 +25,7 @@ describe GoDaddyReseller::Domains do
             :firstname => 'John',
             :lastname => 'Doe',
             :phone => '+1.4805058857',
-            :dbpuser => 'createNew',
+            :dbpuser => 'createNew', # Domains by Proxy User Info, only needed if ordering private registration services
             :dbppwd => 'password',
             :dbppwdhint => 'obvious',
             :dbpemail => 'jdoe@example.com'
