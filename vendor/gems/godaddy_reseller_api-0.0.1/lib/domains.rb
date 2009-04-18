@@ -198,5 +198,19 @@ module GoDaddyReseller
       end
     end
     
+    # Calls the alternate name generation server, and returns the raw array it returns.  The docs didn't really describe it very well.
+    def alternate_domains(name_without_tld, options = {})
+      keep_alive!
+      
+      response = c.post("/nameGenDB", { :nameGenDB => { :_attributes => { :key => name_without_tld}.merge(options) }})
+      result = c.class.decode(response.body)
+      if result['result']['code'] == '1000'
+        result['resdata'].values.detect{ |v| v.is_a?(Array) } || []
+      else
+        raise GoDaddyResellerError(result['result']['msg'])
+      end
+    end
+    alias_method :name_gen_db, :alternate_domains
+    
   end
 end
