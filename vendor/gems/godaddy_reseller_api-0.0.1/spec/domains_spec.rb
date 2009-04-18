@@ -9,7 +9,38 @@ describe GoDaddyReseller::Domains do
     response = '<response c1TRID="reseller.0000000003"><result code="1000"/><resdata><check><domain name="example.com" avail="0" /><domain name="example.net" avail="0" /><domain name="example.org" avail="1"/><domain name="example.info" avail="-1" /><domain name="example.biz" avail="0" /><domain name="example.ws" avail="1" /><domain name="example.us" avail="1" /></check></resdata></response>'
     result = GoDaddyReseller::Connection.decode(response)
     answer = GoDaddyReseller::Domains.check_result_to_answer(result)
-    answer.should == { 'example.com' => false, 'example.net' => false, 'example.org' => true, 'example.info' => :error, 'example.biz' => false, 'example.ws' => true, 'example.us' => true }
+    answer.should == { 'example.com' => false, 
+                       'example.net' => false, 
+                       'example.org' => true, 
+                       'example.info' => :error, 
+                       'example.biz' => false, 
+                       'example.ws' => true, 
+                       'example.us' => true }
+  end
+  
+  it "creates poll xml correctly" do
+    result = GoDaddyReseller::Connection.xml_encode_hash(:poll => { :_attributes => { :op => 'req'}})
+    
+    result.should == '<poll op="req" />'
+  end
+
+  
+  
+  it "decodes a sample poll response correclty" do
+    response = '<response clTRID="reseller.0000000005"><result code="1004"><msg>messages waiting</msg></result><msgQ count="4" date="07-29-2003 13:10:31" /><resdata><REPORT><ITEM orderid="100" roid="1" riid="1" status="1" timestamp="7/29/2003 12:43:45 PM" /><ITEM orderid="100" roid="1" riid="2" status="1" timestamp="7/29/2003 12:43:45 PM" /><ITEM orderid="100" roid="1" riid="1" resourceid="domain:1" status="2" timestamp="7/29/2003 12:45:09 PM" /><ITEM orderid="100" roid="1" riid="2" resourceid="dbp:2" status="2" timestamp="7/29/2003 12:45:09PM" /></REPORT></resdata></response>'
+    result = GoDaddyReseller::Connection.decode(response)
+    
+    answer = GoDaddyReseller::Domains.poll_result_to_order_hash(result)
+    
+    expected = [ { :orderid => '100', :roid => '1', :items => [ 
+      { :riid => '1', :resourceid => 'domain:1', :statuses => [
+        { :id => '1', :timestamp => Time.parse("7/29/2003 12:43:45 PM") },
+        { :id => '2', :timestamp => Time.parse("7/29/2003 12:45:09 PM") } ]},
+      { :riid => '2', :resourceid => 'dbp:2', :statuses => [
+        { :id => '1', :timestamp => Time.parse("7/29/2003 12:43:45 PM") },
+        { :id => '2', :timestamp => Time.parse("7/29/2003 12:45:09 PM") }] } ] }]
+
+    answer.should == expected
   end
 
   it "creates order xml correctly" do
