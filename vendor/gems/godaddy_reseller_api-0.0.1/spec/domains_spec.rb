@@ -43,6 +43,19 @@ describe GoDaddyReseller::Domains do
     answer.should == expected
   end
 
+  it "creates manage xml correctly" do 
+    result = GoDaddyReseller::Connection.xml_encode_hash(
+      :manage => { 
+        :cancel => { 
+          :_attributes => { :type => 'immediate' },
+          :id => 'dbp:2'
+        }
+      }
+    )
+    expected = '<manage><cancel type="immediate"><id>dbp:2</id></cancel></manage>'
+    result.should == expected
+  end
+
   it "creates order xml correctly" do
     result = GoDaddyReseller::Connection.xml_encode_hash(
       :order => {

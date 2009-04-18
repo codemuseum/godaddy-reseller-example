@@ -3,7 +3,7 @@ module GoDaddyReseller
     
     def self.included(base) # :nodoc:
       base.class_eval do
-        attr_accessor :orders
+        attr_accessor :orders, :manages
       end
     end
     
@@ -98,17 +98,34 @@ module GoDaddyReseller
       
       if result['result']['code'] == '1000'
         self.class.poll_result_to_order_hash(result)
-        
       else
         raise GoDaddyResellerError(result['result']['msg'])
       end
-      
-      
-      
+    end
+
+    # Convenience method on top of the manage api call, for cancelling an item
+    def cancel(resourceid, type = 'deferred')
+      manage(:manage => { :cancel => { 
+        :_attributes => { :type => type },
+        :id => resourceid
+      }})
     end
     
-    protected
-
+    # This takes quite the hash. See spec/domains_spec.rb for example manage_hashes
+    # Returns the response message, or raises an error if there was a problem.
+    def manage(manage_hash)
+      keep_alive!
       
+      response = c.post("/Manage", manage_hash)
+      result = c.class.decode(response.body)
+      if result['result']['code'] == '1000'
+        self.manages ||= []
+        self.manages << result['resdata']
+        return self.manages.last
+      else
+        raise GoDaddyResellerError(result['result']['msg'])
+      end
+    end
+    
   end
 end
