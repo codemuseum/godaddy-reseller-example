@@ -24,7 +24,27 @@ describe GoDaddyReseller::Domains do
     result.should == '<poll op="req" />'
   end
 
+  it "decodes a sample info response correctly" do
+    response = '<response clTRID="reseller.0000000007"><result code="1000"/><resdata><info resourceid="domain:1" autoRenewDate="7/28/2005 4:59:59 PM" name="EXAMPLE.COM" ownerID="1" expirationDate="7/28/2005 4:59:59 PM" status="0" private="yes"/><info resourceid="domain:2" autoRenewDate="7/28/2005 4:59:59 PM" name="EXAMPLE.US" ownerID="1" expirationDate="7/28/2005 4:59:59 PM" status="0" private="no"/><info resourceid="domain:3" autoRenewDate="7/28/2005 4:59:59 PM" name="EXAMPLE.INFO" ownerID="1" expirationDate="7/28/2005 4:59:59 PM" status="0" private="no"/></resdata></response>'
+    result = GoDaddyReseller::Connection.decode(response)
+    answer = GoDaddyReseller::Domains.info_result_to_hash(result)
+    
+    expected = { 
+      'example.com' => { :resourceid => 'domain:1', :auto_renew_date => Time.parse('7/28/2005 4:59:59 PM'), :owner_id => '1', :expiration_date => Time.parse('7/28/2005 4:59:59 PM'), :status => 0, :private => true },
+      'example.us' => { :resourceid => 'domain:2', :auto_renew_date => Time.parse('7/28/2005 4:59:59 PM'), :owner_id => '1', :expiration_date => Time.parse('7/28/2005 4:59:59 PM'), :status => 0, :private => false },
+      'example.info' => { :resourceid => 'domain:3', :auto_renew_date => Time.parse('7/28/2005 4:59:59 PM'), :owner_id => '1', :expiration_date => Time.parse('7/28/2005 4:59:59 PM'), :status => 0, :private => false }
+    }
+
+    answer.should == expected
+  end
   
+  it "creates info xml correctly" do
+    result = GoDaddyReseller::Connection.xml_encode_hash({ :info => 
+      ['example.com', 'example.net', 'example.org'].map { |d| {:_attributes => { :domain => d, :type => 'standard' }}} 
+    })
+    expected = '<info domain="example.com" type="standard" /><info domain="example.net" type="standard" /><info domain="example.org" type="standard" />'
+    result.should == expected
+  end
   
   it "decodes a sample poll response correclty" do
     response = '<response clTRID="reseller.0000000005"><result code="1004"><msg>messages waiting</msg></result><msgQ count="4" date="07-29-2003 13:10:31" /><resdata><REPORT><ITEM orderid="100" roid="1" riid="1" status="1" timestamp="7/29/2003 12:43:45 PM" /><ITEM orderid="100" roid="1" riid="2" status="1" timestamp="7/29/2003 12:43:45 PM" /><ITEM orderid="100" roid="1" riid="1" resourceid="domain:1" status="2" timestamp="7/29/2003 12:45:09 PM" /><ITEM orderid="100" roid="1" riid="2" resourceid="dbp:2" status="2" timestamp="7/29/2003 12:45:09PM" /></REPORT></resdata></response>'
