@@ -30,16 +30,25 @@ module GoDaddyReseller
       :delete => 'Accept'
     }
     
-    LOGIN_MIME_TYPE = 'application/x-www-form-urlencoded'
-    XML_MIME_TYPE = 'application/xml'
+    XML_MIME_TYPE = 'text/xml; charset=utf-8'
     
     
     # All GoDaddy requests require the request to be wrapped in this XML
     def self.wrap_with_header_xml(xml)
-      "<?xml version=\"1.0\"?>" + 
-      "<wapi c1TRID=\"#{GoDaddyReseller::API.next_uid[0..50]}\">" +
-         xml +
-      "</wapi>"
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+      "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+      " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\""+
+      " xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + 
+       xml +
+      "</soap:Body></soap:Envelope>"
+    end
+    
+    def self.uuid_hash
+      { :sCLTRID => GoDaddyReseller::API.next_uid[0..50] }
+    end
+    
+    def self.credentials_hash(account_id, pw)
+      { :credential => { :Account => account_id, :Password => pw } }
     end
       
     def self.decode(xml)
@@ -101,6 +110,14 @@ module GoDaddyReseller
       request(:post, path, (body.is_a?(Hash) ? self.class.wrap_with_header_xml(self.class.xml_encode_hash(body)) : body.to_s), build_request_headers(headers, :post))
     end
     
+    # Execute a POST request for the SOAP request
+    def soap(action, body = '', headers = {})
+      request(:post, '', 
+        (body.is_a?(Hash) ? self.class.wrap_with_header_xml(self.class.xml_encode_hash(body)) : body.to_s),
+        build_request_headers(headers.update({ 'SOAPAction' => "\"http://wildwestdomains.com/webservices/#{action}\""}), :post)
+      )
+    end
+    
     # Set URI for remote service.
     def site=(site)
       @site = site.is_a?(URI) ? site : URI.parse(site)
@@ -152,7 +169,12 @@ module GoDaddyReseller
     
     # Builds headers for request to remote service.
     def build_request_headers(headers, http_method=nil)
-      http_format_header(http_method).update(cookie_header).update(headers)
+      http_format_header(http_method).update(default_reseller_headers).update(cookie_header).update(headers)
+    end
+    
+    def default_reseller_headers
+      { 'POST' => "/wswwdapi/wapi.asmx HTTP/1.1", 
+        'Host' => "api.ote.wildwestdomains.com" }
     end
     
     # Builds the cookie header according to what's stored in @cookies

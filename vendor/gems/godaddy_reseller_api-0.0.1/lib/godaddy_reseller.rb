@@ -14,7 +14,7 @@ module GoDaddyReseller
     include Domains
     include DNS
     
-    API_HOST = 'https://api.ote.wildwestdomains.com/wswwdapi/wapi.asmx'
+    API_HOST = 'https://api.ote.wildwestdomains.com/wswwdapi/wapi.asmx?WSDL'
     UID = UUID.new
 
     attr_accessor :connection

@@ -14,6 +14,10 @@ module GoDaddyReseller
       self.password = pw
     end
     
+    def creds
+      c.class.credentials_hash(user_id, password)
+    end
+    
     # Explicitely log in.  Usually called automatically within this library.  Returns true or false.
     def authenticate
       response = c.post("/login", { :login => { :attr_msgDelimiter => '', :id => user_id, :pwd => password }})
@@ -45,7 +49,22 @@ module GoDaddyReseller
         clear_login_data
       end
     end
-    alias_method :describe, :keep_alive
+    # alias_method :describe, :keep_alive
+    
+    def describe
+      response = c.call(:Describe, 
+        { :Describe => 
+          { :_attributes => 
+            { :xmlns => 'http://wildwestdomains.com/webservices/' }}.update(creds).update(c.class.uuid_hash) }
+      )
+      result = c.class.decode(response.body)
+      if result['result']['code'] == '1000'
+        self.timeout_at = Time.now + result['resdata']['timeout'].to_i
+        true
+      else
+        clear_login_data
+      end
+    end
     
     # Calls keep_alive and raises an error if false. 
     def keep_alive!
