@@ -52,12 +52,12 @@ module GoDaddyReseller
     # alias_method :describe, :keep_alive
     
     def describe
-      response = c.call(:Describe, 
+      response = c.soap(:Describe, 
         { :Describe => 
           { :_attributes => 
             { :xmlns => 'http://wildwestdomains.com/webservices/' }}.update(creds).update(c.class.uuid_hash) }
       )
-      result = c.class.decode(response.body)
+      result = c.class.decode_soap(response.body)
       if result['result']['code'] == '1000'
         self.timeout_at = Time.now + result['resdata']['timeout'].to_i
         true

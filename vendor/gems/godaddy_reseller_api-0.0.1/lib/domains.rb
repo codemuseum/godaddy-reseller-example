@@ -90,6 +90,23 @@ module GoDaddyReseller
       order_array
     end
     
+    # Runs the legacy ProcessRequest Command.
+    def process_request(legacy_xml_or_hash)
+      c.soap(:ProcessRequest, { 
+        :ProcessRequest => { 
+          :_attributes => { :xmlns => 'http://wildwestdomains.com/webservices/' },
+          :sRequestXML => 
+            c.class.escape_html(
+              "<wapi clTRID='#{GoDaddyReseller::API.next_uid[0..50]}'" + 
+              " account='#{user_id}' pwd='#{password}'>" +
+              "#{legacy_xml_or_hash.is_a?(Hash) ? c.class.xml_encode_hash(legacy_xml_or_hash) : legacy_xml_or_hash.to_s}" +
+              "</wapi>"
+            )
+          }
+        }
+      )
+    end
+    
     # Executes the call to see if the domains provided are available, returning a hash with true, false, or :error
     def check(domains_array)
       keep_alive!

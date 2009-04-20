@@ -5,6 +5,7 @@ require 'util'
 require 'product_table'
 require 'domains'
 require 'dns'
+require 'certification'
 
 # Example Usage:
 # tda = GoDaddyReseller::API.new('apitest1', 'api1tda')
@@ -13,6 +14,7 @@ module GoDaddyReseller
     include Authentication
     include Domains
     include DNS
+    include Certification
     
     API_HOST = 'https://api.ote.wildwestdomains.com/wswwdapi/wapi.asmx?WSDL'
     UID = UUID.new

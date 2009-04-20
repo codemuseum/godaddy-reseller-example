@@ -38,7 +38,7 @@ module GoDaddyReseller
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
       "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
       " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\""+
-      " xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + 
+      " xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body>" + 
        xml +
       "</soap:Body></soap:Envelope>"
     end
@@ -50,9 +50,27 @@ module GoDaddyReseller
     def self.credentials_hash(account_id, pw)
       { :credential => { :Account => account_id, :Password => pw } }
     end
-      
+    
+    #  Decodes a soap response, to actually get the response message.  Ugly but necessary.
+    def self.decode_soap(soap_xml)
+      decode(soap_response_text(soap_xml))
+    end  
+    
+    # For queries that have a textual response within the xml, not an xml response
+    def self.soap_response_text(soap_xml)
+      decode(soap_xml)['body'].values[0].values[0]
+    end
+    
     def self.decode(xml)
       ActiveResource::Formats::XmlFormat.decode(xml)
+    end
+   
+    def self.escape_html(string)
+      string.to_s.gsub("&", "&amp;").
+        gsub("<", "&lt;").
+        gsub(">", "&gt;").
+        gsub("'", "&#39;").
+        gsub('"', "&quot;")
     end
     
     # Encodes correctly for cookies, e.g. key1=value1; key2=value2
@@ -136,9 +154,10 @@ module GoDaddyReseller
     
     # Makes request to remote service.  # Be sure to handle Timeout::Error
     def request(method, path, *arguments)
-      logger.info "#{method.to_s.upcase} #{site.scheme}://#{site.host}:#{site.port}#{site.path}#{path}" if logger
+      logger.info "#{method.to_s.upcase} #{site.scheme}://#{site.host}:#{site.port}#{site.path}#{site.query ? '?' + site.query : ''}#{path}" if logger
+    logger.info "with body: #{arguments.inspect}" if logger
       result = nil
-      ms = Benchmark.ms { result = http.send(method, "#{site.path}#{path}", *arguments) }
+      ms = Benchmark.ms { result = http.send(method, "#{site.path}#{site.query ? '?' + site.query : ''}#{path}", *arguments) }
       logger.info "--> %d %s (%d %.0fms)" % [result.code, result.message, result.body ? result.body.length : 0, ms] if logger
       handle_response(result)
       # rescue Timeout::Error => e
@@ -163,6 +182,7 @@ module GoDaddyReseller
       http.use_ssl     = @site.is_a?(URI::HTTPS)
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl
       http.read_timeout = @timeout if @timeout # If timeout is not set, the default Net::HTTP timeout (60s) is used.
+      http.set_debug_output $stderr if RAILS_ENV == 'development'
       http
     end
     
