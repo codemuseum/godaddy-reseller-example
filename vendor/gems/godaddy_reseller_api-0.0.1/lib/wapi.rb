@@ -5,6 +5,7 @@
 # ** CheckAvailability: Checks the availability of domains, hosts and name servers.
 # ** Describe: Returns activity timeout and version information from the server.
 # ** Info: Gets information about items that have been previously ordered.
+# ** Poll: Used to retrieve status notifications about pending orders.
 # ** OrderDomains: Used for registering new domain names.
 # ** OrderDomainPrivacy: Used for adding privacy to a domain registration.
 # ** OrderDomainTransfers: Used for transfering ownership of a domain from one user to another.
@@ -27,7 +28,6 @@
 # ** OrderCredits: Used to place an order on items that do not require customization (non-domain).
 # ** OrderDomainBackOrders: Used for back ordering an existing (public or private) domain name.
 # ** OrderResourceRenewals: Used for renewing non-domain items.
-# ** Poll: Used to retrieve status notifications about pending orders.
 # ** RemoveDomainAlert: Used for removing an existing domain alert record.
 # ** ResetPassword: Used for resetting the user's password in the WWD system.
 # ** SetDomainLocking: This method is used for setting or clearing the lock on a list of domains.

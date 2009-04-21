@@ -6,5 +6,5 @@ h2. Usage
 
 <pre>
   godaddy = GoDaddyReseller::API.new('username', 'password')
-  godaddy.describe # Logs you in
+  godaddy.authenticate # tests your login credentials
 </pre>

@@ -34,7 +34,7 @@ module GoDaddyReseller
       STDERR.print("++ #{result.inspect}\n\n")
 
       STDERR.print("5. Domain Name Information Query:\n")
-      result = info_by_resource_id(GoDaddyReseller::Domains.find_by_riid_and_orderid_from_poll_result(2, new_reg[:orderid], polls.last)[:resourceid])
+      result = info_by_resource_id(GoDaddyReseller::WAPI::Util.find_by_riid_and_orderid_from_poll_result(2, new_reg[:orderid], polls.last)[:resourceid])
       STDERR.print("++ #{result.inspect}\n\n")
 
       domain_name_renewal_certification(new_reg[:orderid], new_priv[:orderid], new_reg[:user_id], new_priv[:dbpuser_id])
@@ -116,7 +116,7 @@ module GoDaddyReseller
                 :riid => 4,
                 :duration => 1
               },
-              :resourceid => GoDaddyReseller::Domains.find_by_riid_and_orderid_from_poll_result(1, original_order_id, polls.first)[:resourceid],
+              :resourceid => GoDaddyReseller::WAPI::Util.find_by_riid_and_orderid_from_poll_result(1, original_order_id, polls.first)[:resourceid],
               :sld => 'example',
               :tld => 'us',
               :period => 1
@@ -128,7 +128,7 @@ module GoDaddyReseller
                 :riid => 5,
                 :duration => 1
               },
-              :resourceid => GoDaddyReseller::Domains.find_by_riid_and_orderid_from_poll_result(2, original_order_id, polls.first)[:resourceid],
+              :resourceid => GoDaddyReseller::WAPI::Util.find_by_riid_and_orderid_from_poll_result(2, original_order_id, polls.first)[:resourceid],
               :sld => 'example',
               :tld => 'biz',
               :period => 1
@@ -144,7 +144,7 @@ module GoDaddyReseller
                 :riid => 6,
                 :duration => 1
               },
-              :resourceid => GoDaddyReseller::Domains.find_by_riid_and_orderid_from_poll_result(3, privacy_order_id, polled_privacy_orders)[:resourceid]
+              :resourceid => GoDaddyReseller::WAPI::Util.find_by_riid_and_orderid_from_poll_result(3, privacy_order_id, polled_privacy_orders)[:resourceid]
             }
           ]
         }
@@ -177,7 +177,7 @@ module GoDaddyReseller
               },
               :sld => 'example',
               :tld => 'us',
-              :resourceid => GoDaddyReseller::Domains.find_by_riid_and_orderid_from_poll_result(1, new_order_id, polled_orders)[:resourceid]
+              :resourceid => GoDaddyReseller::WAPI::Util.find_by_riid_and_orderid_from_poll_result(1, new_order_id, polled_orders)[:resourceid]
             }
           ]
         }
