@@ -55,7 +55,7 @@ module GoDaddyReseller
       end
       
       nexus =  top_level_domain.length == 2 ? 
-          { :nexus => { :category => "citizen of #{top_level_domain.upcase}", :use => "personal", :country => "#{top_level_domain.upcase}" } : 
+          { :nexus => { :category => "citizen of #{top_level_domain.upcase}", :use => "personal", :country => "#{top_level_domain.upcase}" }} : 
           {}
       
       nsarray = nameservers.empty? ? {} : { :nsArray => { :NS =>  nameservers.map { |n| { :name => n }}}}
