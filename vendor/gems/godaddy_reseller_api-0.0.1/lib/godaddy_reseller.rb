@@ -5,14 +5,18 @@ require 'util'
 require 'product_table'
 require 'domains'
 require 'dns'
+require 'wapi'
 require 'certification'
 
 # Example Usage:
 # tda = GoDaddyReseller::API.new('apitest1', 'api1tda')
+# If you need to override RAILS_ENV (for example, you have a production environment named something other than 'production'), use
+# tda.set_testing_mode(false)
 module GoDaddyReseller 
   class GoDaddyResellerError < StandardError; end
 
   class API
+    include WAPI
     include Authentication
     include Domains
     include DNS

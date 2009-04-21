@@ -1,5 +1,5 @@
 module GoDaddyReseller 
-  # This module helps with the api reseller certification process, and is not normally needed.
+  # This module helps with the api reseller certification process, and is not needed after certification.
   # Steps to certification: 
   #   (1) go to https://www.ote.resellerextranet.com, 
   #   (2) add your testing server's ip address (no certificate name needed) by navigating to 'IP Address Configuration'

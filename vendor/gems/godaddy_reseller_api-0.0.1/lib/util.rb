@@ -1,5 +1,4 @@
-module GoDaddyReseller 
-  
+module GoDaddyReseller
   module Util
 
   end
