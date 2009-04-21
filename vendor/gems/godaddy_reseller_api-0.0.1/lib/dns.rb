@@ -42,7 +42,7 @@ module GoDaddyReseller
         self.dns_updates << result['resdata']
         return self.dns_updates.last
       else
-        raise GoDaddyResellerError(result['result']['msg'])
+        raise(GoDaddyResellerError.new(result['result']['msg']))
       end
     end
   end
