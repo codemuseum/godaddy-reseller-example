@@ -174,6 +174,11 @@ module GoDaddyReseller
     ]
     
     HASH = ARRAY.inject({}) { |h, p| h[p[1]] = p[0]; h }
+    
+    # Convenience function for returning the product id of a domain registration
+    def self.domain_reg_id(top_level_domain, num_years)
+      GoDaddyReseller::ProductTable::HASH["#{num_years} Year Domain New Registration .#{top_level_domain.to_s.upcase}"]
+    end
   end
 end
     

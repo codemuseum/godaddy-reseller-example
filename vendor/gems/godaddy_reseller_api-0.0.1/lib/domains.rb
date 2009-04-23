@@ -1,6 +1,7 @@
 module GoDaddyReseller 
   module Domains
     
+    # TODO
     # Orders the domain in the format second_level_domain.top_level_domain for num_years.
     #  That is, top_level_domain is without the period (e.g. :com, 'com' or 'COM')
     # 
@@ -24,65 +25,65 @@ module GoDaddyReseller
     #   Otherwise, if other_domain_or_login_hash is a hash with { :user => 'someid' }, it will register the domain for that user
     #   Otherwise, other_domain_or_login_hash must be a hash in the format: { :pwd => 'ghijk', :pwdhint => 'ghijk', :pin => '1234' }
     #  
-    def register_domain(second_level_domain, top_level_domain, num_years, other_domain_or_contact_hash, nameservers = [], other_domain_or_login_hash = nil)
-      
-      product_code = GoDaddyReseller::ProductTable::HASH["#{num_years} Year Domain New Registration .#{top_level_domain.to_s.upcase}"]
-      
-      other_contact_domain = other_domain_or_contact_hash.is_a?(String) ? info_by_domain_name([other_contact_domain]) : nil
-      
-      contact_info = if other_domain_or_contact_hash.is_a?(Hash)
-        other_domain_or_contact_hash
-      else
-        other_contact_domain
-      end
-      
-      login_info = if other_domain_or_contact_hash.nil?
-        { :user => other_contact_domain[:owner_id] }
-      elsif other_domain_or_contact_hash.is_a?(Hash)
-        if other_domain_or_contact_hash.key?(:user)
-          { :email => contact_info[:email], 
-            :firstname => contact_info[:fname], 
-            :lastname => contact_info[:lname], 
-            :phone => contact_info[:phone] }.merge(other_domain_or_contact_hash)
-        else
-          { :email => contact_info[:email], 
-            :firstname => contact_info[:fname], 
-            :lastname => contact_info[:lname], 
-            :phone => contact_info[:phone] }.merge(other_domain_or_contact_hash).merge(:user => 'createNew')
-        end
-      else
-        { :user => info_by_domain_name([other_domain_or_contact_hash])[:owner_id] }
-      end
-      
-      nexus =  top_level_domain.length == 2 ? 
-          { :nexus => { :category => "citizen of #{top_level_domain.upcase}", :use => "personal", :country => "#{top_level_domain.upcase}" }} : 
-          {}
-      
-      nsarray = nameservers.empty? ? {} : { :nsArray => { :NS =>  nameservers.map { |n| { :name => n }}}}
-      
-      order_domains({ 
-        :shopper => login_info,
-        :items => {
-          :DomainRegistration => [
-            { # 1 of 2: example.us
-              :order => {
-                :productid => product_code,
-                :quantity => 1,
-                :riid => 1,
-                :duration => num_years
-              },
-              :sld => second_level_domain,
-              :tld => top_level_domain,
-              :period => num_years,
-              :registrant => contact_info,
-              :admin => contact_info,
-              :billing => contact_info,
-              :tech => contact_info,
-              :autorenewflag => 1
-            }.update(nexus).update(nsarray)
-          ]
-        }
-      })
-    end
+    # def register_domain(second_level_domain, top_level_domain, num_years, other_domain_or_contact_hash, nameservers = [], other_domain_or_login_hash = nil)
+    #   
+    #   product_code = GoDaddyReseller::ProductTable.domain_reg_id(top_level_domain, num_years)
+    #   
+    #   other_contact_domain = other_domain_or_contact_hash.is_a?(String) ? info_by_domain_name([other_contact_domain]) : nil
+    #   
+    #   contact_info = if other_domain_or_contact_hash.is_a?(Hash)
+    #     other_domain_or_contact_hash
+    #   else
+    #     other_contact_domain
+    #   end
+    #   
+    #   login_info = if other_domain_or_contact_hash.nil?
+    #     { :user => other_contact_domain[:owner_id] }
+    #   elsif other_domain_or_contact_hash.is_a?(Hash)
+    #     if other_domain_or_contact_hash.key?(:user)
+    #       { :email => contact_info[:email], 
+    #         :firstname => contact_info[:fname], 
+    #         :lastname => contact_info[:lname], 
+    #         :phone => contact_info[:phone] }.merge(other_domain_or_contact_hash)
+    #     else
+    #       { :email => contact_info[:email], 
+    #         :firstname => contact_info[:fname], 
+    #         :lastname => contact_info[:lname], 
+    #         :phone => contact_info[:phone] }.merge(other_domain_or_contact_hash).merge(:user => 'createNew')
+    #     end
+    #   else
+    #     { :user => info_by_domain_name([other_domain_or_contact_hash])[:owner_id] }
+    #   end
+    #   
+    #   nexus =  top_level_domain.length == 2 ? 
+    #       { :nexus => { :category => "citizen of #{top_level_domain.upcase}", :use => "personal", :country => "#{top_level_domain.upcase}" }} : 
+    #       {}
+    #   
+    #   nsarray = nameservers.empty? ? {} : { :nsArray => { :NS =>  nameservers.map { |n| { :name => n }}}}
+    #   
+    #   order_domains({ 
+    #     :shopper => login_info,
+    #     :items => {
+    #       :DomainRegistration => [
+    #         { # 1 of 2: example.us
+    #           :order => {
+    #             :productid => product_code,
+    #             :quantity => 1,
+    #             :riid => 1,
+    #             :duration => num_years
+    #           },
+    #           :sld => second_level_domain,
+    #           :tld => top_level_domain,
+    #           :period => num_years,
+    #           :registrant => contact_info,
+    #           :admin => contact_info,
+    #           :billing => contact_info,
+    #           :tech => contact_info,
+    #           :autorenewflag => 1
+    #         }.update(nexus).update(nsarray)
+    #       ]
+    #     }
+    #   })
+    # end
   end
 end

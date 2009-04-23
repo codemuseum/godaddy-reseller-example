@@ -117,16 +117,6 @@ module GoDaddyReseller
     
     
     attr_reader :site, :timeout, :cookies
-  
-    # Execute a GET request.
-    def get(path, headers = {})
-      request(:get, path, build_request_headers(headers, :get))
-    end
-
-    # Execute a POST request.
-    def post(path, body = '', headers = {})
-      request(:post, path, (body.is_a?(Hash) ? self.class.wrap_with_header_xml(self.class.xml_encode_hash(body)) : body.to_s), build_request_headers(headers, :post))
-    end
     
     # Execute a POST request for the SOAP request
     def soap(action, body = '', headers = {})
